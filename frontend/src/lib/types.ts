@@ -13,6 +13,7 @@ export interface Market {
   end_date: string | null;
   image: string | null;
   description: string | null;
+  clob_token_id: string | null;
   tags: string[];
 }
 

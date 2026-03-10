@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query
-from app.models.market import MarketResponse, MarketsListResponse
+from app.models.market import MarketResponse, MarketsListResponse, PriceHistoryResponse
 from app.services import polymarket as svc
 
 router = APIRouter()
@@ -38,3 +38,20 @@ async def get_market(market_id: str):
     if market is None:
         raise HTTPException(status_code=404, detail="Market not found")
     return MarketResponse.from_market(market)
+
+
+@router.get("/{market_id}/history", response_model=PriceHistoryResponse)
+async def get_market_history(
+    market_id: str,
+    interval: str = Query("max", description="1d, 1w, 1m, 6m, max"),
+    fidelity: int = Query(60, description="Data point interval in minutes"),
+):
+    market = await svc.fetch_market(market_id)
+    if market is None:
+        raise HTTPException(status_code=404, detail="Market not found")
+    if not market.clobTokenIds:
+        raise HTTPException(status_code=404, detail="No price data available for this market")
+
+    token_id = market.clobTokenIds[0]
+    history = await svc.fetch_price_history(token_id, interval=interval, fidelity=fidelity)
+    return PriceHistoryResponse(token_id=token_id, history=history, interval=interval)

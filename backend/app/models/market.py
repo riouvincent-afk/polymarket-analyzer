@@ -25,6 +25,7 @@ class Market(BaseModel):
     description: Optional[str] = None
     image: Optional[str] = None
     tags: list[MarketTag] = []
+    clobTokenIds: list[str] = []
 
     @field_validator("outcomes", "outcomePrices", mode="before")
     @classmethod
@@ -81,6 +82,7 @@ class MarketResponse(BaseModel):
     image: Optional[str] = None
     description: Optional[str] = None
     tags: list[str] = []
+    clob_token_id: Optional[str] = None
 
     @classmethod
     def from_market(cls, m: Market) -> "MarketResponse":
@@ -100,6 +102,7 @@ class MarketResponse(BaseModel):
             image=m.image,
             description=m.description,
             tags=[t.label for t in m.tags],
+            clob_token_id=m.clobTokenIds[0] if m.clobTokenIds else None,
         )
 
 
@@ -108,3 +111,14 @@ class MarketsListResponse(BaseModel):
     total: int
     limit: int
     offset: int
+
+
+class PricePoint(BaseModel):
+    t: int    # unix timestamp
+    p: float  # price 0-1
+
+
+class PriceHistoryResponse(BaseModel):
+    token_id: str
+    history: list[PricePoint]
+    interval: str

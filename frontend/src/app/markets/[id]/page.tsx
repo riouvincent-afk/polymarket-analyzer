@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { fetchMarket } from "@/lib/api";
 import { Market } from "@/lib/types";
 import Header from "@/components/Header";
+import PriceChart from "@/components/PriceChart";
 
 function formatVolume(n: number): string {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
@@ -105,6 +106,9 @@ export default function MarketPage() {
                 </div>
               </div>
             </div>
+
+            {/* Price chart */}
+            <PriceChart marketId={id} />
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4">
