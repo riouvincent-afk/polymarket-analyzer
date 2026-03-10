@@ -1,47 +1,89 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Header from "@/components/Header";
 import MarketCard from "@/components/MarketCard";
 import MarketFilters from "@/components/MarketFilters";
 import StatsBar from "@/components/StatsBar";
-import { mockMarkets } from "@/lib/mockData";
+import { fetchMarkets } from "@/lib/api";
 import { Market } from "@/lib/types";
 
 export default function Home() {
+  const [markets, setMarkets] = useState<Market[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sortBy, setSortBy] = useState("volume24h");
 
-  const filtered = useMemo(() => {
-    return mockMarkets
-      .filter((m) => {
-        const matchSearch = m.question.toLowerCase().includes(search.toLowerCase());
-        const matchCategory = category === "All" || m.category === category;
-        return matchSearch && matchCategory;
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    fetchMarkets({ limit: 50, order: sortBy })
+      .then((data) => {
+        setMarkets(data.markets);
+        setTotal(data.total);
       })
-      .sort((a, b) => b[sortBy as keyof Market] as number - (a[sortBy as keyof Market] as number));
-  }, [search, category, sortBy]);
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [sortBy]);
+
+  const filtered = useMemo(() => {
+    return markets.filter((m) => {
+      const matchSearch = m.question.toLowerCase().includes(search.toLowerCase());
+      const matchCategory =
+        category === "All" ||
+        m.tags.some((t) => t.toLowerCase() === category.toLowerCase()) ||
+        m.category?.toLowerCase() === category.toLowerCase();
+      return matchSearch && matchCategory;
+    });
+  }, [markets, search, category]);
+
+  const categories = useMemo(() => {
+    const tags = new Set<string>();
+    markets.forEach((m) => m.tags.forEach((t) => tags.add(t)));
+    return ["All", ...Array.from(tags).slice(0, 6)];
+  }, [markets]);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <Header />
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        <StatsBar markets={mockMarkets} />
+        <StatsBar markets={filtered} total={total} />
 
         <MarketFilters
           search={search}
           category={category}
           sortBy={sortBy}
+          categories={categories}
           onSearch={setSearch}
           onCategory={setCategory}
           onSort={setSortBy}
         />
 
-        {filtered.length === 0 ? (
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-5 h-52 animate-pulse" />
+            ))}
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center py-16">
+            <p className="text-red-400 font-medium">Failed to load markets</p>
+            <p className="text-gray-500 text-sm mt-1">{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && filtered.length === 0 && (
           <p className="text-center text-gray-500 py-16">No markets found.</p>
-        ) : (
+        )}
+
+        {!loading && !error && filtered.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filtered.map((market) => (
               <MarketCard key={market.id} market={market} />

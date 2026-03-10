@@ -1,12 +1,25 @@
 export interface Market {
   id: string;
   question: string;
-  category: string;
-  yesPrice: number; // 0-1
-  noPrice: number;  // 0-1
+  slug: string | null;
+  category: string | null;
+  yes_price: number;
+  no_price: number;
+  volume: number;
   volume24h: number;
-  volumeTotal: number;
   liquidity: number;
-  endDate: string;
   active: boolean;
+  closed: boolean;
+  end_date: string | null;
+  image: string | null;
+  tags: string[];
 }
+
+export interface MarketsResponse {
+  markets: Market[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export type SortField = "volume24h" | "volume" | "liquidity" | "endDate";

@@ -3,16 +3,21 @@ import { Market } from "@/lib/types";
 function formatVolume(n: number): string {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
-  return `$${n}`;
+  return `$${n.toFixed(0)}`;
 }
 
-export default function StatsBar({ markets }: { markets: Market[] }) {
-  const totalVolume = markets.reduce((s, m) => s + m.volumeTotal, 0);
+interface Props {
+  markets: Market[];
+  total: number;
+}
+
+export default function StatsBar({ markets, total }: Props) {
+  const totalVolume = markets.reduce((s, m) => s + m.volume, 0);
   const totalVol24h = markets.reduce((s, m) => s + m.volume24h, 0);
   const totalLiquidity = markets.reduce((s, m) => s + m.liquidity, 0);
 
   const stats = [
-    { label: "Markets", value: markets.length.toString() },
+    { label: "Markets", value: total.toString() },
     { label: "Total Volume", value: formatVolume(totalVolume) },
     { label: "Volume 24h", value: formatVolume(totalVol24h) },
     { label: "Liquidity", value: formatVolume(totalLiquidity) },
