@@ -27,7 +27,7 @@ class Market(BaseModel):
     tags: list[MarketTag] = []
     clobTokenIds: list[str] = []
 
-    @field_validator("outcomes", "outcomePrices", mode="before")
+    @field_validator("outcomes", "outcomePrices", "clobTokenIds", mode="before")
     @classmethod
     def parse_json_string(cls, v):
         if isinstance(v, str):
