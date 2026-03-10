@@ -12,6 +12,7 @@ export interface Market {
   closed: boolean;
   end_date: string | null;
   image: string | null;
+  description: string | null;
   tags: string[];
 }
 

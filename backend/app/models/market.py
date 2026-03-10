@@ -79,6 +79,7 @@ class MarketResponse(BaseModel):
     closed: bool
     end_date: Optional[str] = None
     image: Optional[str] = None
+    description: Optional[str] = None
     tags: list[str] = []
 
     @classmethod
@@ -97,6 +98,7 @@ class MarketResponse(BaseModel):
             closed=m.closed,
             end_date=m.endDate,
             image=m.image,
+            description=m.description,
             tags=[t.label for t in m.tags],
         )
 

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Market } from "@/lib/types";
 
 const TAG_COLORS: Record<string, string> = {
@@ -24,7 +25,7 @@ export default function MarketCard({ market }: { market: Market }) {
   const tagColor = TAG_COLORS[label] ?? "text-gray-400 bg-gray-400/10";
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col gap-4 hover:border-gray-600 transition-colors">
+    <Link href={`/markets/${market.id}`} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col gap-4 hover:border-gray-600 transition-colors cursor-pointer">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${tagColor}`}>
@@ -65,6 +66,6 @@ export default function MarketCard({ market }: { market: Market }) {
           <p className="text-white font-medium">{formatVolume(market.liquidity)}</p>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
