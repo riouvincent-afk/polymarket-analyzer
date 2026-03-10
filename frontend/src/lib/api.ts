@@ -17,7 +17,7 @@ export async function fetchMarkets(params: {
     active: String(params.active ?? true),
   });
 
-  const res = await fetch(`${API}/markets/?${q}`);
+  const res = await fetch(`${API}/markets?${q}`);
   if (!res.ok) throw new Error(`API error ${res.status}`);
   return res.json();
 }
