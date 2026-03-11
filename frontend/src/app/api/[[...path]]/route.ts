@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND = "http://localhost:8000";
+const BACKEND = "http://localhost:8001";
 
 async function proxy(req: NextRequest): Promise<NextResponse> {
   const url = new URL(req.url);

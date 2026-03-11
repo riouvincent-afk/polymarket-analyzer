@@ -18,6 +18,15 @@ def _is_fresh(ts: float) -> bool:
     return time.time() - ts < CACHE_TTL
 
 
+# Map frontend sort keys → Gamma API field names
+_ORDER_MAP = {
+    "volume24h": "volume24hr",
+    "volume": "volume",
+    "liquidity": "liquidity",
+    "endDate": "end_date_iso",
+}
+
+
 async def fetch_markets(
     active: bool = True,
     closed: bool = False,
@@ -41,7 +50,7 @@ async def fetch_markets(
         "closed": str(closed).lower(),
         "limit": limit,
         "offset": offset,
-        "order": order,
+        "order": _ORDER_MAP.get(order, order),
         "ascending": str(ascending).lower(),
     }
     if tag_id is not None:

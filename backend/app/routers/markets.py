@@ -5,7 +5,7 @@ from app.services import polymarket as svc
 router = APIRouter()
 
 
-@router.get("/", response_model=MarketsListResponse)
+@router.get("", response_model=MarketsListResponse)
 async def list_markets(
     active: bool = Query(True, description="Filter active markets"),
     closed: bool = Query(False, description="Filter closed markets"),

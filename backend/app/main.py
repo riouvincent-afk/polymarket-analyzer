@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import markets
 
-app = FastAPI(title="Polymarket Analyzer API", version="0.1.0", redirect_slashes=False)
+app = FastAPI(title="Polymarket Analyzer API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
