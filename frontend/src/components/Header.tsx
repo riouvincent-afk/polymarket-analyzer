@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV = [
-  { href: "/",       label: "Marchés" },
-  { href: "/crypto", label: "Crypto"  },
+  { href: "/",        label: "Marchés" },
+  { href: "/crypto",  label: "Crypto"  },
+  { href: "/signals", label: "Signals", hot: true },
 ];
 
 export default function Header() {
@@ -26,20 +27,23 @@ export default function Header() {
 
         {/* Nav */}
         <nav className="flex items-center gap-1">
-          {NAV.map(({ href, label }) => {
+          {NAV.map(({ href, label, hot }) => {
             const active = pathname === href || (href !== "/" && pathname.startsWith(href));
             return (
               <Link
                 key={href}
                 href={href}
                 className={[
-                  "px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors",
+                  "relative px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors",
                   active
                     ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
                     : "text-gray-400 hover:text-white hover:bg-gray-800/60",
                 ].join(" ")}
               >
                 {label}
+                {hot && !active && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                )}
               </Link>
             );
           })}

@@ -73,3 +73,81 @@ export function fmtProfit(profit: number): string {
   if (profit >= 1000) return `+$${(profit / 1000).toFixed(1)}K`;
   return `+$${profit.toFixed(1)}`;
 }
+
+/* ─────────────────────────────────────────────
+   Moneyprinter Signal Score  (distinct from opportunityScore)
+
+   4 axes:
+     vol      = log10(vol24h + 1) / 7          — volume momentum
+     liq      = log10(liquidity + 1) / 6       — market depth
+     prox     = (1 - |p - 0.5| × 2)²          — price uncertainty (near 50/50)
+     velocity = log10(vol24h/liq × 10 + 1)
+                / log10(11)                    — trading speed vs pool size
+
+   score = vel×0.25 + vol×0.25 + liq×0.20 + prox×0.30
+───────────────────────────────────────────────── */
+export interface SignalBreakdown {
+  velocity: number;   // 0-100
+  volume: number;
+  liquidity: number;
+  proximity: number;
+}
+
+export function signalBreakdown(market: Market): SignalBreakdown {
+  const vol  = Math.min(Math.log10(market.volume24h + 1) / 7, 1);
+  const liq  = Math.min(Math.log10(market.liquidity  + 1) / 6, 1);
+  const prox = Math.pow(1 - Math.abs(market.yes_price - 0.5) * 2, 2);
+  const ratio = market.liquidity > 0 ? market.volume24h / market.liquidity : 0;
+  const vel  = Math.min(Math.log10(ratio * 10 + 1) / Math.log10(11), 1);
+  return {
+    velocity:  Math.round(vel  * 100),
+    volume:    Math.round(vol  * 100),
+    liquidity: Math.round(liq  * 100),
+    proximity: Math.round(prox * 100),
+  };
+}
+
+export function moneyprinterscore(market: Market): number {
+  const bd = signalBreakdown(market);
+  return Math.round(
+    bd.velocity  * 0.25 +
+    bd.volume    * 0.25 +
+    bd.liquidity * 0.20 +
+    bd.proximity * 0.30
+  );
+}
+
+export type SignalTier = "hot" | "watch" | "low";
+
+export function signalTier(score: number): SignalTier {
+  if (score >= 70) return "hot";
+  if (score >= 40) return "watch";
+  return "low";
+}
+
+export const TIER_STYLE: Record<SignalTier, {
+  label: string; sub: string;
+  scoreColor: string; border: string; bg: string; badge: string; bar: string;
+}> = {
+  hot: {
+    label: "Opportunité détectée", sub: "Score ≥ 70",
+    scoreColor: "text-emerald-400",
+    border: "border-emerald-500/30", bg: "bg-emerald-500/5",
+    badge: "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30",
+    bar: "bg-emerald-500",
+  },
+  watch: {
+    label: "À surveiller", sub: "Score 40–69",
+    scoreColor: "text-orange-400",
+    border: "border-orange-500/25", bg: "bg-orange-500/5",
+    badge: "bg-orange-500/15 text-orange-300 border border-orange-500/30",
+    bar: "bg-orange-500",
+  },
+  low: {
+    label: "Sous le radar", sub: "Score < 40",
+    scoreColor: "text-gray-500",
+    border: "border-gray-800", bg: "",
+    badge: "bg-gray-700/50 text-gray-400 border border-gray-700",
+    bar: "bg-gray-600",
+  },
+};
