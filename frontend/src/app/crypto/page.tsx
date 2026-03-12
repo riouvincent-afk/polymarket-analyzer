@@ -20,13 +20,15 @@ interface Coin {
 }
 
 /* ─── Helpers ─── */
-function fmtPrice(n: number): string {
+function fmtPrice(n: number | null | undefined): string {
+  if (n == null || isNaN(n)) return "—";
   if (n >= 1000) return `$${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
   if (n >= 1)    return `$${n.toFixed(2)}`;
   return `$${n.toFixed(4)}`;
 }
 
-function fmtLarge(n: number): string {
+function fmtLarge(n: number | null | undefined): string {
+  if (n == null || isNaN(n)) return "—";
   if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
   if (n >= 1e9)  return `$${(n / 1e9).toFixed(1)}B`;
   if (n >= 1e6)  return `$${(n / 1e6).toFixed(0)}M`;
@@ -190,9 +192,11 @@ export default function CryptoPage() {
                 const proj = projection(coin);
                 const d = coin.price_change_percentage_24h ?? 0;
                 const w = coin.price_change_percentage_7d_in_currency ?? 0;
-                const range = coin.high_24h - coin.low_24h;
+                const high = coin.high_24h ?? coin.current_price;
+                const low  = coin.low_24h  ?? coin.current_price;
+                const range = high - low;
                 const pricePos = range > 0
-                  ? ((coin.current_price - coin.low_24h) / range) * 100
+                  ? Math.min(100, Math.max(0, ((coin.current_price - low) / range) * 100))
                   : 50;
 
                 return (
@@ -218,10 +222,10 @@ export default function CryptoPage() {
                       <p className="text-2xl font-extrabold text-white tracking-tight">{fmtPrice(coin.current_price)}</p>
                       <div className="flex flex-col items-end gap-1">
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-md border ${pctBg(d)}`}>
-                          {d >= 0 ? "+" : ""}{d.toFixed(2)}% 24h
+                          {d >= 0 ? "+" : ""}{(d || 0).toFixed(2)}% 24h
                         </span>
                         <span className={`text-[10px] font-medium ${pctColor(w)}`}>
-                          {w >= 0 ? "+" : ""}{w.toFixed(2)}% 7j
+                          {w >= 0 ? "+" : ""}{(w || 0).toFixed(2)}% 7j
                         </span>
                       </div>
                     </div>
@@ -229,8 +233,8 @@ export default function CryptoPage() {
                     {/* 24h range bar */}
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] text-gray-500">
-                        <span>Bas 24h {fmtPrice(coin.low_24h)}</span>
-                        <span>Haut 24h {fmtPrice(coin.high_24h)}</span>
+                        <span>Bas 24h {fmtPrice(low)}</span>
+                        <span>Haut 24h {fmtPrice(high)}</span>
                       </div>
                       <div className="relative h-1.5 bg-gray-800 rounded-full overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-yellow-500 to-emerald-500 opacity-40 rounded-full" />
