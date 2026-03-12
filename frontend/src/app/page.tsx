@@ -119,8 +119,8 @@ export default function Home() {
         {!loading && !error && filtered.length > 0 && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {filtered.map((market) => (
-                <MarketCard key={market.id} market={market} />
+              {filtered.map((market, i) => (
+                <MarketCard key={market.id} market={market} index={i} />
               ))}
             </div>
 
