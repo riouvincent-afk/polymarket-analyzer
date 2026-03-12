@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import MarketCard from "@/components/MarketCard";
 import MarketFilters from "@/components/MarketFilters";
 import StatsBar from "@/components/StatsBar";
+import TopBets from "@/components/TopBets";
 import { fetchMarkets } from "@/lib/api";
 import { Market } from "@/lib/types";
 
@@ -73,6 +74,10 @@ export default function Home() {
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         <StatsBar markets={filtered} total={total} />
+
+        {!loading && !error && markets.length > 0 && (
+          <TopBets markets={markets} />
+        )}
 
         <MarketFilters
           search={search}

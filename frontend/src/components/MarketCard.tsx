@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Market } from "@/lib/types";
+import { opportunityScore, scoreGrade } from "@/lib/score";
 
 const TAG_COLORS: Record<string, string> = {
   Crypto: "text-yellow-400 bg-yellow-400/10",
@@ -23,6 +24,8 @@ export default function MarketCard({ market }: { market: Market }) {
   const noPct = 100 - yesPct;
   const label = market.tags[0] ?? market.category ?? "Other";
   const tagColor = TAG_COLORS[label] ?? "text-gray-400 bg-gray-400/10";
+  const score = opportunityScore(market);
+  const grade = scoreGrade(score);
 
   return (
     <Link href={`/markets/${market.id}`} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col gap-4 hover:border-gray-600 transition-colors cursor-pointer">
@@ -31,9 +34,14 @@ export default function MarketCard({ market }: { market: Market }) {
         <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${tagColor}`}>
           {label}
         </span>
-        {market.end_date && (
-          <span className="text-xs text-gray-500 shrink-0">Ends {formatDate(market.end_date)}</span>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${grade.ring} ${grade.color}`}>
+            {score} {grade.label}
+          </span>
+          {market.end_date && (
+            <span className="text-xs text-gray-500">{formatDate(market.end_date)}</span>
+          )}
+        </div>
       </div>
 
       {/* Question */}
