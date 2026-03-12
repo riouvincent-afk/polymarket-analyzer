@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { WalletButton } from "@/components/WalletButton";
 
 const NAV = [
   { href: "/",        label: "Marchés" },
@@ -49,10 +50,13 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Status */}
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[11px] font-semibold text-emerald-400 tracking-wide">LIVE</span>
+        {/* Right side: LIVE badge + Wallet */}
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[11px] font-semibold text-emerald-400 tracking-wide">LIVE</span>
+          </div>
+          <WalletButton />
         </div>
       </div>
     </header>
