@@ -7,9 +7,11 @@ import MarketFilters from "@/components/MarketFilters";
 import StatsBar from "@/components/StatsBar";
 import TopBets from "@/components/TopBets";
 import { fetchMarkets } from "@/lib/api";
+import { opportunityScore } from "@/lib/score";
 import { Market } from "@/lib/types";
 
 const PAGE_SIZE = 20;
+const OPPORTUNITY_FETCH = 100; // fetch more to rank client-side
 
 export default function Home() {
   const [markets, setMarkets] = useState<Market[]>([]);
@@ -21,26 +23,32 @@ export default function Home() {
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const [sortBy, setSortBy] = useState("volume24h");
+  const [sortBy, setSortBy] = useState("opportunity");
+
+  const isOpportunitySort = sortBy === "opportunity";
 
   // Initial load / sort change → reset
   useEffect(() => {
     setLoading(true);
     setError(null);
     setOffset(0);
-    fetchMarkets({ limit: PAGE_SIZE, offset: 0, order: sortBy })
+    const limit = isOpportunitySort ? OPPORTUNITY_FETCH : PAGE_SIZE;
+    fetchMarkets({ limit, offset: 0, order: isOpportunitySort ? "volume24h" : sortBy, closed: false })
       .then((data) => {
-        setMarkets(data.markets);
+        const sorted = isOpportunitySort
+          ? [...data.markets].sort((a, b) => opportunityScore(b) - opportunityScore(a))
+          : data.markets;
+        setMarkets(sorted);
         setTotal(data.total);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [sortBy]);
+  }, [sortBy]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadMore = useCallback(() => {
     const nextOffset = offset + PAGE_SIZE;
     setLoadingMore(true);
-    fetchMarkets({ limit: PAGE_SIZE, offset: nextOffset, order: sortBy })
+    fetchMarkets({ limit: PAGE_SIZE, offset: nextOffset, order: sortBy, closed: false })
       .then((data) => {
         setMarkets((prev) => [...prev, ...data.markets]);
         setOffset(nextOffset);
@@ -66,7 +74,7 @@ export default function Home() {
     return ["All", ...Array.from(tags).slice(0, 6)];
   }, [markets]);
 
-  const hasMore = markets.length < total;
+  const hasMore = !isOpportunitySort && markets.length < total;
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">

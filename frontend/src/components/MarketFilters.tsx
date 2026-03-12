@@ -42,6 +42,7 @@ export default function MarketFilters({ search, category, sortBy, categories, on
         onChange={(e) => onSort(e.target.value)}
         className="bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
       >
+        <option value="opportunity">Sort: Opportunité</option>
         <option value="volume24h">Sort: Vol 24h</option>
         <option value="volume">Sort: Total Vol</option>
         <option value="liquidity">Sort: Liquidity</option>

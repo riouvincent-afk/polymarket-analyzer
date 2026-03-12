@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Market } from "@/lib/types";
-import { opportunityScore, scoreGrade } from "@/lib/score";
+import { opportunityScore, scoreGrade, potentialYield } from "@/lib/score";
 
 const MEDALS = ["🥇", "🥈", "🥉"];
 
@@ -31,6 +31,7 @@ export default function TopBets({ markets }: { markets: Market[] }) {
           const yesPct = Math.round(market.yes_price * 100);
           const noPct = 100 - yesPct;
           const label = market.tags[0] ?? market.category ?? "Other";
+          const yld = potentialYield(market);
 
           return (
             <Link
@@ -64,6 +65,15 @@ export default function TopBets({ markets }: { markets: Market[] }) {
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-emerald-400">YES {yesPct}%</span>
                   <span className="text-red-400">NO {noPct}%</span>
+                </div>
+              </div>
+
+              {/* Yield highlight */}
+              <div className="bg-gray-800/80 rounded-lg px-3 py-2 text-xs flex items-center justify-between">
+                <span className="text-gray-400">Mise $10 →</span>
+                <div className="flex gap-3 font-semibold">
+                  <span className="text-emerald-400">YES <span className="text-white">+${yld.yesBet.toFixed(1)}</span></span>
+                  <span className="text-red-400">NO <span className="text-white">+${yld.noBet.toFixed(1)}</span></span>
                 </div>
               </div>
 

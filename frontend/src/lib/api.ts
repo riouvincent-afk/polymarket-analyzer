@@ -8,6 +8,7 @@ export async function fetchMarkets(params: {
   order?: string;
   ascending?: boolean;
   active?: boolean;
+  closed?: boolean;
 }): Promise<MarketsResponse> {
   const q = new URLSearchParams({
     limit: String(params.limit ?? 50),
@@ -15,6 +16,7 @@ export async function fetchMarkets(params: {
     order: params.order ?? "volume24h",
     ascending: String(params.ascending ?? false),
     active: String(params.active ?? true),
+    closed: String(params.closed ?? false),
   });
 
   const res = await fetch(`${API}/markets?${q}`);

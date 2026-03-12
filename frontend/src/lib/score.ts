@@ -1,5 +1,30 @@
 import { Market } from "./types";
 
+export interface YieldResult {
+  yesBet: number;      // profit on $10 YES bet
+  noBet: number;       // profit on $10 NO bet
+  yesPct: number;      // ROI %
+  noPct: number;
+  bestSide: "YES" | "NO";
+  bestProfit: number;
+  bestPct: number;
+  bestPrice: number;
+}
+
+/** Potential profit for a $10 bet on each side. */
+export function potentialYield(market: Market, stake = 10): YieldResult {
+  const yesBet = stake / market.yes_price - stake;
+  const noBet  = stake / market.no_price  - stake;
+  const yesPct = (yesBet / stake) * 100;
+  const noPct  = (noBet  / stake) * 100;
+  // "best" = side with better expected value proxy (less extreme price = more uncertain)
+  const bestSide   = market.yes_price <= market.no_price ? "YES" : "NO";
+  const bestProfit = bestSide === "YES" ? yesBet : noBet;
+  const bestPct    = bestSide === "YES" ? yesPct : noPct;
+  const bestPrice  = bestSide === "YES" ? market.yes_price : market.no_price;
+  return { yesBet, noBet, yesPct, noPct, bestSide, bestProfit, bestPct, bestPrice };
+}
+
 /**
  * Opportunity score 0–100 combining:
  * - Volume 24h   (45%) — activity/momentum

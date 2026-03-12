@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Market } from "@/lib/types";
-import { opportunityScore, scoreGrade } from "@/lib/score";
+import { opportunityScore, scoreGrade, potentialYield } from "@/lib/score";
 
 const TAG_COLORS: Record<string, string> = {
   Crypto: "text-yellow-400 bg-yellow-400/10",
@@ -26,6 +26,7 @@ export default function MarketCard({ market }: { market: Market }) {
   const tagColor = TAG_COLORS[label] ?? "text-gray-400 bg-gray-400/10";
   const score = opportunityScore(market);
   const grade = scoreGrade(score);
+  const yld = potentialYield(market);
 
   return (
     <Link href={`/markets/${market.id}`} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col gap-4 hover:border-gray-600 transition-colors cursor-pointer">
@@ -56,6 +57,19 @@ export default function MarketCard({ market }: { market: Market }) {
         <div className="flex justify-between text-xs font-semibold">
           <span className="text-emerald-400">YES {yesPct}%</span>
           <span className="text-red-400">NO {noPct}%</span>
+        </div>
+      </div>
+
+      {/* Yield */}
+      <div className="flex items-center justify-between bg-gray-800/60 rounded-lg px-3 py-2 text-xs">
+        <span className="text-gray-400">Mise $10 →</span>
+        <div className="flex gap-3">
+          <span className="text-emerald-400 font-semibold">
+            YES <span className="text-white">+${yld.yesBet.toFixed(1)}</span>
+          </span>
+          <span className="text-red-400 font-semibold">
+            NO <span className="text-white">+${yld.noBet.toFixed(1)}</span>
+          </span>
         </div>
       </div>
 
