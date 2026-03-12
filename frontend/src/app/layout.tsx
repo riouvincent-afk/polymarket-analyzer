@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Polymarket Analyzer",
-  description: "Analyze Polymarket prediction markets",
+  title: "Moneyprinter",
+  description: "Track prediction markets and crypto opportunities in real time",
 };
 
 export default function RootLayout({
