@@ -132,7 +132,7 @@ export default function PriceChart({ marketId }: Props) {
             <Tooltip
               contentStyle={{ background: "#111827", border: "1px solid #374151", borderRadius: 8, fontSize: 12 }}
               labelFormatter={(t) => formatTime(t as number, interval)}
-              formatter={(v: number) => [`${Math.round(v * 100)}%`, "YES"]}
+              formatter={(v: unknown) => [`${Math.round((v as number) * 100)}%`, "YES"] as [string, string]}
             />
             <Area
               type="monotone"
