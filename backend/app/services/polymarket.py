@@ -7,7 +7,7 @@ CLOB_API = "https://clob.polymarket.com"
 
 # Simple in-memory cache: {cache_key: (timestamp, data)}
 _cache: dict[str, tuple[float, list[Market]]] = {}
-CACHE_TTL = 60  # seconds
+CACHE_TTL = 30  # seconds
 
 
 def _cache_key(**kwargs) -> str:

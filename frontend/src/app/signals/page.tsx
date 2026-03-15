@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import Header from "@/components/Header";
 import { fetchMarkets } from "@/lib/api";
 import { Market } from "@/lib/types";
 import { moneyprinterscore, signalBreakdown, potentialYield } from "@/lib/score";
@@ -589,8 +588,6 @@ export default function SignalsPage() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-      <Header />
-
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-12">
 
         {/* Page header */}

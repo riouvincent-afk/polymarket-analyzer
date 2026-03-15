@@ -3,18 +3,25 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { WalletButton } from "@/components/WalletButton";
+import { useBotContext } from "@/lib/BotContext";
 
 const NAV = [
-  { href: "/",        label: "Marchés" },
-  { href: "/crypto",  label: "Crypto"  },
-  { href: "/signals", label: "Signals", hot: true },
+  { href: "/dashboard", label: "Dashboard", hot: true },
+  { href: "/markets",   label: "Radar"  },
+  { href: "/crypto",    label: "Crypto"  },
+  { href: "/signals",   label: "Signaux" },
+  { href: "/bot",       label: "Bot" },
+  { href: "/bourse",    label: "Bourse" },
 ];
 
 export default function Header() {
   const pathname = usePathname();
+  const { state: botState } = useBotContext();
+
+  const isHome = pathname === "/";
 
   return (
-    <header className="border-b border-gray-800/60 bg-gray-950/90 backdrop-blur-md sticky top-0 z-10">
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${isHome ? "border-b border-white/5 bg-black/20 backdrop-blur-md" : "border-b border-gray-800/60 bg-gray-950/90 backdrop-blur-md"}`}>
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
@@ -30,6 +37,8 @@ export default function Header() {
         <nav className="flex items-center gap-1">
           {NAV.map(({ href, label, hot }) => {
             const active = pathname === href || (href !== "/" && pathname.startsWith(href));
+            const isBot  = href === "/bot";
+            const botRunning = isBot && botState.isActive;
             return (
               <Link
                 key={href}
@@ -42,8 +51,13 @@ export default function Header() {
                 ].join(" ")}
               >
                 {label}
+                {/* Static "new" dot for Signals */}
                 {hot && !active && (
                   <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                )}
+                {/* Bot running indicator — green when active, gray when not */}
+                {isBot && !active && (
+                  <span className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${botRunning ? "bg-emerald-400 animate-pulse" : "bg-gray-600"}`} />
                 )}
               </Link>
             );

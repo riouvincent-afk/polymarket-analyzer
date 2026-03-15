@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { fetchMarket } from "@/lib/api";
 import { Market } from "@/lib/types";
-import Header from "@/components/Header";
 import PriceChart from "@/components/PriceChart";
 
 function formatVolume(n: number): string {
@@ -45,8 +44,6 @@ export default function MarketPage() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-      <Header />
-
       <main className="max-w-3xl mx-auto px-6 py-8 space-y-6">
         <button
           onClick={() => router.back()}
